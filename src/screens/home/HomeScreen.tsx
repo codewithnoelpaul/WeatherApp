@@ -1,13 +1,25 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, Button, SafeAreaView, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  Button,
+  SafeAreaView,
+  FlatList,
+  TouchableOpacity,
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import useHomeViewModel from './HomeViewModel';
 import {styles} from './HomeStyles';
 import Input from '../../components/Input/Input';
 import {Strings} from '../../constants/Strings';
 import {Colors} from '../../constants/Colors';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../../navigations';
 
 const HomeScreen: React.FC = () => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const {weatherData, loading, error, fetchWeather} = useHomeViewModel();
   const [searchKey, setSearchKey] = useState<string>('');
   const [city, setCity] = useState<string>('San Francisco');
@@ -24,9 +36,12 @@ const HomeScreen: React.FC = () => {
     searchKey(text);
   };
 
+  const onCard = () => {
+    navigation.navigate('details');
+  };
   const renderRecentSearches = () => {
     return (
-      <View style={styles.recentSearchCard}>
+      <TouchableOpacity style={styles.recentSearchCard} onPress={onCard}>
         <View style={styles.cardRowViewTop}>
           <Text style={styles.cardCityText}>{weatherData?.name}</Text>
           <Text style={styles.cardTempText}>{weatherData?.main?.temp}°</Text>
@@ -39,7 +54,7 @@ const HomeScreen: React.FC = () => {
             H:{weatherData?.main?.temp_max}° L:{weatherData?.main?.temp_min}°
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -57,7 +72,9 @@ const HomeScreen: React.FC = () => {
       </View>
       <View style={styles.bodyView}>
         <View style={styles.currentLocationCardContainer}>
-          <Text style={styles.currentLocationText}>{Strings.en.yourLocation}</Text>
+          <Text style={styles.currentLocationText}>
+            {Strings.en.yourLocation}
+          </Text>
           {weatherData && (
             <>
               <View style={styles.rowViewTop}>

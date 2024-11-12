@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
   },
   currentLocationCardContainer: {
     marginTop: 20,
-    backgroundColor: Colors.appBg,
+    backgroundColor: Colors.white,
     width: '100%',
     borderRadius: 8,
     paddingHorizontal: 15,
@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
     shadowOffset: {height: 0, width: 0},
     elevation: 5,
   },
-  currentLocationText:{
+  currentLocationText: {
     fontSize: 16,
     fontWeight: '400',
     color: Colors.jet,
