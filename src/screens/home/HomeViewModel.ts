@@ -22,6 +22,10 @@ const useHomeViewModel = (): HomeViewModel => {
     try {
       let data = await fetchWeatherData(city);
       data.main.temp = kelvinToCelsius(data.main.temp);
+      data.main.feels_like = kelvinToCelsius(data.main.feels_like);
+      data.main.temp_min = kelvinToCelsius(data.main.temp_min);
+      data.main.temp_max = kelvinToCelsius(data.main.temp_max);
+
       setWeatherData(data);
       setError(null);
     } catch (err) {

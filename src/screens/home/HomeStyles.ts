@@ -15,7 +15,6 @@ export const styles = StyleSheet.create({
   },
   bodyView: {
     paddingHorizontal: 20,
-    alignItems: 'center',
   },
   currentLocationCardContainer: {
     marginTop: 20,
@@ -30,6 +29,11 @@ export const styles = StyleSheet.create({
     shadowOffset: {height: 0, width: 0},
     elevation: 5,
   },
+  currentLocationText:{
+    fontSize: 16,
+    fontWeight: '400',
+    color: Colors.jet,
+  },
   rowViewTop: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -40,11 +44,66 @@ export const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'space-between',
   },
-  tempText: {fontSize: 70, fontWeight: '700', color: Colors.primaryGreen},
-  cityText: {fontSize: 18, fontWeight: '500', color: Colors.ebony},
+  tempText: {fontSize: 70, fontWeight: '700', color: Colors.jet},
+  cityText: {fontSize: 20, fontWeight: '500', color: Colors.ebony},
   climateText: {fontSize: 16, fontWeight: '400', color: Colors.ebony},
   weatherIcon: {
     width: 100,
     height: 120,
+  },
+
+  //
+  recentSearchesText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.jet,
+    marginTop: 20,
+    marginBottom: 20,
+  },
+
+  flatList: {},
+  flatListContainer: {
+    paddingBottom: '120%',
+  },
+  recentSearchCard: {
+    marginTop: 10,
+    backgroundColor: Colors.appBg,
+    width: '100%',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 15,
+  },
+  cardRowViewTop: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  cardRowViewBottom: {
+    marginTop: 10,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+  },
+  cardCityText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: Colors.ebony,
+  },
+  cardTempText: {
+    fontSize: 24,
+    fontWeight: '400',
+    color: Colors.ebony,
+  },
+  cardDescriptionText: {
+    fontSize: 14,
+    fontWeight: '400',
+    color: Colors.ebony,
+  },
+  noRecentSearches: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.ebony,
+    textAlign: 'center',
+    marginTop: '50%',
   },
 });
