@@ -12,4 +12,5 @@ export const Colors = {
   bgGray: '#FFFFFF4D',
   fontGray: '#858585',
   transparentWhite90: '#FFFFFFE6',
+  gray:'#bfbfbf'
 };
