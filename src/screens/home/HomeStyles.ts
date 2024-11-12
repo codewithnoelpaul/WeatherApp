@@ -32,7 +32,16 @@ export const styles = StyleSheet.create({
   currentLocationText: {
     fontSize: 16,
     fontWeight: '400',
-    color: Colors.jet,
+    color: Colors.primaryGreen,
+  },
+  emptyLocationView: {
+    padding: 10,
+    width: '100%',
+  },
+  enableLocationText: {
+    fontSize: 14,
+    fontWeight: '400',
+    color: Colors.ebony,
   },
   rowViewTop: {
     flexDirection: 'row',
@@ -56,7 +65,7 @@ export const styles = StyleSheet.create({
   recentSearchesText: {
     fontSize: 16,
     fontWeight: '700',
-    color: Colors.jet,
+    color: Colors.primaryGreen,
     marginTop: 20,
     marginBottom: 20,
   },

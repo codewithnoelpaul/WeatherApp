@@ -16,6 +16,7 @@ import {Colors} from '../../constants/Colors';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../navigations';
+import Loader from '../../components/Loader/Loader';
 
 const HomeScreen: React.FC = () => {
   const navigation =
@@ -39,6 +40,11 @@ const HomeScreen: React.FC = () => {
   const onCard = () => {
     navigation.navigate('details');
   };
+
+  const onSettings = () => {
+    // openSettings('application').catch(() => console.warn('Cannot open app settings'));
+  };
+
   const renderRecentSearches = () => {
     return (
       <TouchableOpacity style={styles.recentSearchCard} onPress={onCard}>
@@ -62,8 +68,48 @@ const HomeScreen: React.FC = () => {
     <Text style={styles.noRecentSearches}>{Strings.en.noRecentSearches}</Text>
   );
 
+  const renderLocationCard = () => (
+    <>
+      <View style={styles.rowViewTop}>
+        <Text style={styles.tempText}>{weatherData?.main.temp}°</Text>
+        {iconUrl && (
+          <FastImage
+            style={styles.weatherIcon}
+            source={{
+              uri: iconUrl,
+              priority: FastImage.priority.high,
+            }}
+            resizeMode={FastImage.resizeMode.contain}
+          />
+        )}
+      </View>
+      <View style={styles.rowViewBottom}>
+        <Text style={styles.cityText}>{weatherData?.name}</Text>
+        <Text style={styles.climateText}>
+          {weatherData?.weather[0].description}
+        </Text>
+      </View>
+    </>
+  );
+
+  const renderEmpptyLocationCard = () => (
+    <>
+      <View style={styles.emptyLocationView}>
+        <Text style={styles.enableLocationText}>
+          {Strings.en.enableLocation}
+        </Text>
+        <Text
+          style={[styles.currentLocationText, {marginTop: 10}]}
+          onPress={onSettings}>
+          {Strings.en.goToSetting}
+        </Text>
+      </View>
+    </>
+  );
+
   return (
     <View style={styles.container}>
+      <Loader isVisible={loading} />
       <View style={styles.headerView}>
         <Input
           placeholder={Strings.en.searchPlaceholder}
@@ -75,29 +121,7 @@ const HomeScreen: React.FC = () => {
           <Text style={styles.currentLocationText}>
             {Strings.en.yourLocation}
           </Text>
-          {weatherData && (
-            <>
-              <View style={styles.rowViewTop}>
-                <Text style={styles.tempText}>{weatherData.main.temp}°</Text>
-                {iconUrl && (
-                  <FastImage
-                    style={styles.weatherIcon}
-                    source={{
-                      uri: iconUrl,
-                      priority: FastImage.priority.high,
-                    }}
-                    resizeMode={FastImage.resizeMode.contain}
-                  />
-                )}
-              </View>
-              <View style={styles.rowViewBottom}>
-                <Text style={styles.cityText}>{weatherData.name}</Text>
-                <Text style={styles.climateText}>
-                  {weatherData.weather[0].description}
-                </Text>
-              </View>
-            </>
-          )}
+          {weatherData ? renderLocationCard() : renderEmpptyLocationCard()}
         </View>
         <Text style={styles.recentSearchesText}>
           {Strings.en.recentSearches}
