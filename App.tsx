@@ -1,9 +1,8 @@
 import React from 'react';
-import {SafeAreaView} from 'react-native';
-import HomeScreen from './src/screens/home/HomeScreen';
+import Navigation from './src/navigations';
 
 function App(): React.JSX.Element {
-  return <HomeScreen />;
+  return <Navigation />;
 }
 
 export default App;
