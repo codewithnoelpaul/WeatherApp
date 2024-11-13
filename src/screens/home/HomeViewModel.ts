@@ -54,6 +54,25 @@ const useHomeViewModel = (): HomeViewModel => {
       (error: Error) => console.log('Create table error:', error),
     );
   };
+  const fetchEachRecent = async (lat: number, lon: number): Promise<WeatherData | null> => {
+    try {
+      const data = await apiManager.get<WeatherData>('weather', {
+        lat,
+        lon,
+        appid: apiKey,
+      });
+  
+      data.main.temp = kelvinToCelsius(data.main.temp);
+      data.main.feels_like = kelvinToCelsius(data.main.feels_like);
+      data.main.temp_min = kelvinToCelsius(data.main.temp_min);
+      data.main.temp_max = kelvinToCelsius(data.main.temp_max);
+  
+      return data;
+    } catch (err) {
+      console.error('Error fetching weather by location:', err);
+      return null;
+    }
+  };
 
   const getRecentSearches = () => {
     setLoading(true);
@@ -61,17 +80,24 @@ const useHomeViewModel = (): HomeViewModel => {
       tx.executeSql(
         'SELECT * FROM searchData',
         [],
-        (tx: any, results: ResultSet) => {
+        async (tx: any, results: ResultSet) => {
           const data = [];
+
           for (let i = 0; i < results?.rows?.length; i++) {
-            data.push(results.rows.item(i));
+            const item = results.rows.item(i);
+            const weatherData = await fetchEachRecent(item.lat, item.long);
+
+            if (weatherData) {
+              data.push(weatherData);
+            }
           }
+  
           console.log('getRecentSearches -', data);
           setRecentSearches(data);
           setLoading(false);
         },
         (error: Error) => {
-          console.log('Error loading contacts:', error);
+          console.log('Error loading recent searches:', error);
           setLoading(false);
         },
       );

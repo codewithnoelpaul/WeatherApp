@@ -25,7 +25,7 @@ import {
   RESULTS,
 } from 'react-native-permissions';
 import Geolocation from 'react-native-geolocation-service';
-import {RecentSearch} from './HomeModel';
+import {RecentSearch, WeatherCoord, WeatherData} from './HomeModel';
 
 const HomeScreen: React.FC = () => {
   const isFocused = useIsFocused();
@@ -113,8 +113,8 @@ const HomeScreen: React.FC = () => {
     }
   };
 
-  const onCard = (item: RecentSearch) => {
-    navigation.navigate('details', {lat: item.lat, long: item.long});
+  const onCard = (item: WeatherCoord) => {
+    navigation.navigate('details', {lat: item.lat, long: item.lon});
   };
 
   const onSettings = () => {
@@ -123,23 +123,23 @@ const HomeScreen: React.FC = () => {
     );
   };
 
-  const renderRecentSearches = ({item}: ListRenderItemInfo<RecentSearch>) => {
+  const renderRecentSearches = ({item}: ListRenderItemInfo<WeatherData>) => {
     return (
       <TouchableOpacity
         style={styles.recentSearchCard}
         onPress={() => {
-          onCard(item);
+          onCard(item.coord);
         }}>
         <View style={styles.cardRowViewTop}>
-          <Text style={styles.cardCityText}>{weatherData?.name}</Text>
-          <Text style={styles.cardTempText}>{weatherData?.main?.temp}°</Text>
+          <Text style={styles.cardCityText}>{item?.name}</Text>
+          <Text style={styles.cardTempText}>{item?.main?.temp}°</Text>
         </View>
         <View style={styles.cardRowViewBottom}>
           <Text style={styles.cardDescriptionText}>
-            {weatherData?.weather[0].description}
+            {item?.weather[0].description}
           </Text>
           <Text style={styles.cardDescriptionText}>
-            H:{weatherData?.main?.temp_max}° L:{weatherData?.main?.temp_min}°
+            H:{item?.main?.temp_max}° L:{item?.main?.temp_min}°
           </Text>
         </View>
       </TouchableOpacity>
