@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import apiManager from '../../services/ApiManager';
-import {WeatherData} from '../home/HomeModel';
+import {apiKey, WeatherData} from '../home/HomeModel';
 
 interface DetailsViewModel {
   weatherData: WeatherData | null;
@@ -22,16 +22,15 @@ const useDetailsViewModel = (): DetailsViewModel => {
       const data: WeatherData = await apiManager.get('weather', {
         lat,
         lon,
-        appid: 'ad48ef57fc073616eec522064a175756',
+        appid: apiKey,
       });
-
+      console.log('fetchWeatherByLocation Reponse - ', data);
       data.main.temp = kelvinToCelsius(data.main.temp);
       data.main.feels_like = kelvinToCelsius(data.main.feels_like);
       data.main.temp_min = kelvinToCelsius(data.main.temp_min);
       data.main.temp_max = kelvinToCelsius(data.main.temp_max);
-      data.visibility = data.visibility/1000;
-      console.log("fetchWeatherByLocation Reponse - ",data);
-      
+      data.visibility = data.visibility / 1000;
+
       setWeatherData(data);
     } catch (err) {
     } finally {
