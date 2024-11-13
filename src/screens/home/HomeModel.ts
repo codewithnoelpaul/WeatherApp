@@ -1,6 +1,6 @@
 import ApiManager from '../../services/ApiManager';
 
-const apiKey = 'ad48ef57fc073616eec522064a175756';
+export const apiKey = 'ad48ef57fc073616eec522064a175756';
 
 export interface WeatherCondition {
   id: number;
@@ -62,6 +62,17 @@ export interface City {
   lon: number;
   country: string;
   state?: string;
+}
+
+export interface Location {
+  latitude: number;
+  longitude: number;
+}
+
+export interface RecentSearch {
+  id: number;
+  lat: number;
+  long: number;
 }
 
 export const fetchWeatherData = async (city: string): Promise<WeatherData> => {

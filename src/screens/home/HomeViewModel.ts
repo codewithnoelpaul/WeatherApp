@@ -1,5 +1,12 @@
-import {useState} from 'react';
-import {City, fetchWeatherData, WeatherData} from './HomeModel';
+import {useState, useEffect} from 'react';
+import SQLite, {SQLiteDatabase} from 'react-native-sqlite-storage';
+import {
+  apiKey,
+  City,
+  fetchWeatherData,
+  RecentSearch,
+  WeatherData,
+} from './HomeModel';
 import apiManager from '../../services/ApiManager';
 
 interface HomeViewModel {
@@ -9,14 +16,14 @@ interface HomeViewModel {
   loading: boolean;
   isSearchLoading: boolean;
   error: string | null;
+  recentSearches: RecentSearch[];
+  getRecentSearches: () => void;
   fetchWeather: (city: string) => Promise<void>;
   fetchCities: (query: string) => Promise<void>;
   fetchWeatherByLocation: (lat: number, lon: number) => Promise<void>;
 }
 
-const kelvinToCelsius = (kelvin: number): number => {
-  return Math.round(kelvin - 273.15);
-};
+const kelvinToCelsius = (kelvin: number): number => Math.round(kelvin - 273.15);
 
 const useHomeViewModel = (): HomeViewModel => {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
@@ -26,11 +33,55 @@ const useHomeViewModel = (): HomeViewModel => {
   const [cityData, setCityData] = useState<City[] | null>(null);
   const [currentLocationData, setCurrentLocationData] =
     useState<WeatherData | null>(null);
+  const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
+
+  const db: SQLiteDatabase = SQLite.openDatabase(
+    {name: 'searchResults', location: 'default'},
+    () => console.log('Database connected!'),
+    (error: any) => console.log('Database error:', error),
+  );
+
+  useEffect(() => {
+    createDatabaseTable();
+    getRecentSearches();
+  }, []);
+
+  const createDatabaseTable = () => {
+    db.executeSql(
+      'CREATE TABLE IF NOT EXISTS searchData (id INTEGER PRIMARY KEY AUTOINCREMENT, lat FLOAT, long FLOAT)',
+      [],
+      () => console.log('Table created successfully'),
+      (error: any) => console.log('Create table error:', error),
+    );
+  };
+
+  const getRecentSearches = () => {
+    setLoading(true);
+    db.transaction((tx: any) => {
+      tx.executeSql(
+        'SELECT * FROM searchData',
+        [],
+        (tx: any, results: any) => {
+          const data = [];
+          for (let i = 0; i < results?.rows?.length; i++) {
+            data.push(results.rows.item(i));
+          }
+          console.log('getRecentSearches -', data);
+          setRecentSearches(data);
+          setLoading(false);
+        },
+        (error: any) => {
+          console.log('Error loading contacts:', error);
+          setLoading(false);
+        },
+      );
+    });
+  };
 
   const fetchWeather = async (city: string) => {
     setLoading(true);
     try {
-      let data = await fetchWeatherData(city);
+      const data = await fetchWeatherData(city);
       data.main.temp = kelvinToCelsius(data.main.temp);
       data.main.feels_like = kelvinToCelsius(data.main.feels_like);
       data.main.temp_min = kelvinToCelsius(data.main.temp_min);
@@ -47,38 +98,36 @@ const useHomeViewModel = (): HomeViewModel => {
 
   const fetchCities = async (query: string): Promise<void> => {
     if (query.length < 2) return;
-    setIsSearchLoading(true)
+    setIsSearchLoading(true);
     try {
       const cities: City[] = await apiManager.getGeocoding<City[]>('direct', {
         q: query,
         limit: 5,
-        appid: 'ad48ef57fc073616eec522064a175756',
+        appid: apiKey,
       });
-      console.log('fetchCities Response -', cities);
-      
       setCityData(cities);
-      setIsSearchLoading(false)
     } catch (err) {
       console.error('Error fetching cities:', err);
-      setIsSearchLoading(false)
+    } finally {
+      setIsSearchLoading(false);
     }
   };
 
   const fetchWeatherByLocation = async (lat: number, lon: number) => {
     setLoading(true);
     try {
-      const data: WeatherData = await apiManager.get('weather', {
+      const data = await apiManager.get<WeatherData>('weather', {
         lat,
         lon,
-        appid: 'ad48ef57fc073616eec522064a175756',
+        appid: apiKey,
       });
 
       data.main.temp = kelvinToCelsius(data.main.temp);
       data.main.feels_like = kelvinToCelsius(data.main.feels_like);
       data.main.temp_min = kelvinToCelsius(data.main.temp_min);
       data.main.temp_max = kelvinToCelsius(data.main.temp_max);
+
       setCurrentLocationData(data);
-      // setWeatherData(data);
       setError(null);
     } catch (err) {
       setError((err as Error).message);
@@ -94,6 +143,8 @@ const useHomeViewModel = (): HomeViewModel => {
     loading,
     isSearchLoading,
     error,
+    recentSearches,
+    getRecentSearches,
     fetchWeather,
     fetchCities,
     fetchWeatherByLocation,

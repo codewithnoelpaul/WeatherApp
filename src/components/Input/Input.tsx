@@ -14,6 +14,8 @@ import {City} from '../../screens/home/HomeModel';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../navigations';
+import SQLite from 'react-native-sqlite-storage';
+
 
 const Input = ({
   loading,
@@ -34,12 +36,50 @@ const Input = ({
   };
 
   const onCardClick = ({item}: {item: City}) => {
-    navigation.navigate('details');
+    addDataToDatabase({item})
+    navigation.navigate('details', {lat: item.lat, long: item.lon});
     setInputValue('');
   };
+  
   const handleChangeText = (text: string) => {
     setInputValue(text);
     onChangeText && onChangeText(text);
+  };
+
+  const db = SQLite.openDatabase(
+    {
+      name: 'searchResults',
+      location: 'default',
+    },
+    () => {
+      console.log('Database connected!');
+    },
+    error => console.log('Database error', error),
+  );
+
+  const addDataToDatabase = async ({item}: {item: City}) => {
+    // setIsLoading(true);
+    let sql =
+      'INSERT INTO searchData (lat, long) VALUES (?, ?)';
+    let params = [item.lat,item.lon];
+    db.executeSql(
+      sql,
+      params,
+      result => {
+        // setIsLoading(false);
+        // Toast.show({
+        //   text1: 'Data Added Successfully.',
+        //   position: 'bottom',
+        //   visibilityTime: 2000,
+        //   bottomOffset: 50,
+        // });
+        console.log('Data  Added Successfully');
+      },
+      error => {
+        // setIsLoading(false);
+        console.log('Add  Data error', error);
+      },
+    );
   };
 
   const renderDropdownItem = ({item}: {item: City}) => (

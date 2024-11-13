@@ -2,19 +2,19 @@ import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
-  Button,
   SafeAreaView,
   FlatList,
   TouchableOpacity,
   Platform,
   Alert,
+  ListRenderItemInfo,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import useHomeViewModel from './HomeViewModel';
 import {styles} from './HomeStyles';
 import Input from '../../components/Input/Input';
 import {Strings} from '../../constants/Strings';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../navigations';
 import Loader from '../../components/Loader/Loader';
@@ -25,17 +25,21 @@ import {
   RESULTS,
 } from 'react-native-permissions';
 import Geolocation from 'react-native-geolocation-service';
+import {RecentSearch} from './HomeModel';
 
 const HomeScreen: React.FC = () => {
+  const isFocused = useIsFocused();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const {
     weatherData,
     cityData,
     currentLocationData,
+    recentSearches,
     loading,
     isSearchLoading,
     error,
+    getRecentSearches,
     fetchWeather,
     fetchCities,
     fetchWeatherByLocation,
@@ -48,11 +52,16 @@ const HomeScreen: React.FC = () => {
 
   useEffect(() => {
     requestLocationPermission();
+    getRecentSearches();
   }, []);
 
   useEffect(() => {
     fetchWeather(city);
   }, [city]);
+
+  useEffect(() => {
+    getRecentSearches();
+  }, [isFocused]);
 
   const getIconUrl = (icon: string) => {
     return weatherData?.weather[0]?.icon
@@ -104,8 +113,8 @@ const HomeScreen: React.FC = () => {
     }
   };
 
-  const onCard = () => {
-    navigation.navigate('details');
+  const onCard = (item: RecentSearch) => {
+    navigation.navigate('details', {lat: item.lat, long: item.long});
   };
 
   const onSettings = () => {
@@ -114,9 +123,13 @@ const HomeScreen: React.FC = () => {
     );
   };
 
-  const renderRecentSearches = () => {
+  const renderRecentSearches = ({item}: ListRenderItemInfo<RecentSearch>) => {
     return (
-      <TouchableOpacity style={styles.recentSearchCard} onPress={onCard}>
+      <TouchableOpacity
+        style={styles.recentSearchCard}
+        onPress={() => {
+          onCard(item);
+        }}>
         <View style={styles.cardRowViewTop}>
           <Text style={styles.cardCityText}>{weatherData?.name}</Text>
           <Text style={styles.cardTempText}>{weatherData?.main?.temp}°</Text>
@@ -198,7 +211,7 @@ const HomeScreen: React.FC = () => {
           {Strings.en.recentSearches}
         </Text>
         <FlatList
-          data={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
+          data={recentSearches}
           renderItem={renderRecentSearches}
           ListEmptyComponent={renderEmptyRecentSearches}
           style={styles.flatList}

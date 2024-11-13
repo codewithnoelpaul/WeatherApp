@@ -4,10 +4,11 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import HomeScreen from '../screens/home/HomeScreen';
 import DetailsScreen from '../screens/search/DetailsScreen';
 import {Strings} from '../constants/Strings';
+import {City} from '../screens/home/HomeModel';
 
 export type RootStackParamList = {
   home: undefined;
-  details: undefined;
+  details: {lat: number; long: number};
 };
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
@@ -26,6 +27,7 @@ const AppNav = () => {
         name={'details'}
         component={DetailsScreen}
         options={{title: Strings.en.cityDetails}}
+        initialParams={{lat: 0, long: 0}}
       />
     </RootStack.Navigator>
   );
