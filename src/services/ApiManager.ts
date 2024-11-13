@@ -3,10 +3,16 @@ import axios, {AxiosInstance} from 'axios';
 class ApiManager {
   private static instance: ApiManager;
   private apiClient: AxiosInstance;
+  private geoApiClient: AxiosInstance;
 
   private constructor() {
     this.apiClient = axios.create({
       baseURL: 'https://api.openweathermap.org/data/2.5/',
+      timeout: 10000,
+    });
+
+    this.geoApiClient = axios.create({
+      baseURL: 'https://api.openweathermap.org/geo/1.0/',
       timeout: 10000,
     });
   }
@@ -27,9 +33,9 @@ class ApiManager {
     }
   }
 
-  public async post<T>(endpoint: string, data = {}): Promise<T> {
+  public async getGeocoding<T>(endpoint: string, params = {}): Promise<T> {
     try {
-      const response = await this.apiClient.post<T>(endpoint, data);
+      const response = await this.geoApiClient.get<T>(endpoint, {params});
       return response.data;
     } catch (error) {
       throw error;

@@ -17,11 +17,13 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../navigations';
 import Loader from '../../components/Loader/Loader';
+import {AutocompleteDropdown} from 'react-native-autocomplete-dropdown';
 
 const HomeScreen: React.FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const {weatherData, loading, error, fetchWeather} = useHomeViewModel();
+  const {weatherData, cityData, loading, error, fetchWeather, fetchCities} =
+    useHomeViewModel();
   const [searchKey, setSearchKey] = useState<string>('');
   const [city, setCity] = useState<string>('San Francisco');
 
@@ -34,7 +36,10 @@ const HomeScreen: React.FC = () => {
     : null;
 
   const onChangeText = (text: string) => {
-    searchKey(text);
+    // setSearchKey(text);
+    if (text.length >= 3) {
+      fetchCities(text);
+    }
   };
 
   const onCard = () => {
@@ -108,10 +113,11 @@ const HomeScreen: React.FC = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Loader isVisible={loading} />
       <View style={styles.headerView}>
         <Input
+          data={cityData}
           placeholder={Strings.en.searchPlaceholder}
           onChangeText={onChangeText}
         />
@@ -135,7 +141,7 @@ const HomeScreen: React.FC = () => {
           showsVerticalScrollIndicator={false}
         />
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

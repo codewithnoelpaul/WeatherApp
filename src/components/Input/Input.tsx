@@ -4,6 +4,7 @@ import {styles} from './InputStyles';
 import {InputProps} from './InputModel';
 
 const Input = ({
+  data,
   placeholder,
   value,
   onChangeText,

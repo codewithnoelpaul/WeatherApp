@@ -10,8 +10,7 @@ export const styles = StyleSheet.create({
     backgroundColor: Colors.appBg,
     justifyContent: 'flex-end',
     paddingHorizontal: 20,
-    paddingTop: 50,
-    paddingBottom: 10,
+    paddingVertical: 10,
   },
   bodyView: {
     paddingHorizontal: 20,

@@ -1,11 +1,14 @@
 import {useState} from 'react';
-import {fetchWeatherData, WeatherData} from './HomeModel';
+import {City, fetchWeatherData, WeatherData} from './HomeModel';
+import apiManager from '../../services/ApiManager';
 
 interface HomeViewModel {
   weatherData: WeatherData | null;
+  cityData: City[] | null;
   loading: boolean;
   error: string | null;
   fetchWeather: (city: string) => Promise<void>;
+  fetchCities: (query: string) => Promise<void>;
 }
 
 const kelvinToCelsius = (kelvin: number): number => {
@@ -16,6 +19,7 @@ const useHomeViewModel = (): HomeViewModel => {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [cityData, setCityData] = useState<City[] | null>(null);
 
   const fetchWeather = async (city: string) => {
     setLoading(true);
@@ -35,7 +39,22 @@ const useHomeViewModel = (): HomeViewModel => {
     }
   };
 
-  return {weatherData, loading, error, fetchWeather};
+  const fetchCities = async (query: string): Promise<void> => {
+    if (query.length < 2) return;
+
+    try {
+      const cities: City[] = await apiManager.getGeocoding<City[]>('direct', {
+        q: query,
+        limit: 5,
+        appid: 'ad48ef57fc073616eec522064a175756',
+      });
+      setCityData(cities);
+    } catch (err) {
+      console.error('Error fetching cities:', err);
+    }
+  };
+
+  return {weatherData, cityData, loading, error, fetchWeather, fetchCities};
 };
 
 export default useHomeViewModel;

@@ -13,7 +13,7 @@ export const Strings = {
     windDeg: 'Wind Deg :',
     windspeed: 'Wind Speed :',
     enableLocation:'Please enable locations from your phone settings',
-    goToSetting:'Go to Setting'
-
+    goToSetting:'Go to Setting',
+    cityDetails:'City Details'
   },
 };

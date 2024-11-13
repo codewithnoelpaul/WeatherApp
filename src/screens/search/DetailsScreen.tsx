@@ -16,12 +16,7 @@ const DetailsScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerView}>
-        <Text style={styles.backButton} onPress={onBack}>
-          {`< Home`}
-        </Text>
-      </View>
+    <SafeAreaView style={styles.container}>
       <View style={styles.bodyView}>
         <FastImage
           style={styles.weatherIcon}
@@ -70,7 +65,7 @@ const DetailsScreen: React.FC = () => {
           </View>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

@@ -56,6 +56,14 @@ export interface WeatherData {
   wind: WeatherWind;
 }
 
+export interface City {
+  name: string;
+  lat: number;
+  lon: number;
+  country: string;
+  state?: string;
+}
+
 export const fetchWeatherData = async (city: string): Promise<WeatherData> => {
   return await ApiManager.get<WeatherData>('weather', {q: city, appid: apiKey});
 };
