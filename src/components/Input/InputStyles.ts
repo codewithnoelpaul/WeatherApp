@@ -1,26 +1,55 @@
-import {Colors} from '../../constants/Colors';
 import {StyleSheet} from 'react-native';
+import {Colors} from '../../constants/Colors';
 
 export const styles = StyleSheet.create({
   container: {
-    borderColor: Colors.fontGray,
+    position: 'relative',
+    zIndex: 1,
+  },
+  rowView: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
-    height: 44,
-    marginTop: 20,
     borderRadius: 8,
-    backgroundColor:Colors.white
+    backgroundColor: Colors.white,
+    borderColor: Colors.fontGray,
   },
   input: {
-    flex: 1,
-    paddingHorizontal: 20,
-    color: Colors.jet,
-    fontSize: 14,
-    justifyContent: 'center',
+    width: '90%',
+    height: 40,
+    paddingHorizontal: 10,
   },
-  errorText: {
-    color: Colors.orange,
-    fontSize: 12,
-    marginTop: 5,
-    paddingHorizontal: 15,
+  dropdownContainer: {
+    position: 'absolute',
+    top: 45,
+    width: '100%',
+    backgroundColor: Colors.white,
+    borderTopRightRadius: 0,
+    borderTopLeftRadius: 0,
+    borderRadius: 8,
+    shadowColor: Colors.black,
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 10,
+    zIndex: 100,
+  },
+  dropdownText: {
+    padding: 10,
+    color: '#777',
+  },
+  dropdownList: {
+    maxHeight: 150,
+  },
+  dropdownItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderColor: '#eee',
+  },
+  noResultsText: {
+    paddingVertical: 10,
+    alignSelf: 'center',
+    textAlign: 'center',
+    color: Colors.jet,
   },
 });

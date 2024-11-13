@@ -7,6 +7,7 @@ interface HomeViewModel {
   cityData: City[] | null;
   currentLocationData: WeatherData | null;
   loading: boolean;
+  isSearchLoading: boolean;
   error: string | null;
   fetchWeather: (city: string) => Promise<void>;
   fetchCities: (query: string) => Promise<void>;
@@ -20,6 +21,7 @@ const kelvinToCelsius = (kelvin: number): number => {
 const useHomeViewModel = (): HomeViewModel => {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [cityData, setCityData] = useState<City[] | null>(null);
   const [currentLocationData, setCurrentLocationData] =
@@ -45,16 +47,20 @@ const useHomeViewModel = (): HomeViewModel => {
 
   const fetchCities = async (query: string): Promise<void> => {
     if (query.length < 2) return;
-
+    setIsSearchLoading(true)
     try {
       const cities: City[] = await apiManager.getGeocoding<City[]>('direct', {
         q: query,
         limit: 5,
         appid: 'ad48ef57fc073616eec522064a175756',
       });
+      console.log('fetchCities Response -', cities);
+      
       setCityData(cities);
+      setIsSearchLoading(false)
     } catch (err) {
       console.error('Error fetching cities:', err);
+      setIsSearchLoading(false)
     }
   };
 
@@ -86,6 +92,7 @@ const useHomeViewModel = (): HomeViewModel => {
     cityData,
     currentLocationData,
     loading,
+    isSearchLoading,
     error,
     fetchWeather,
     fetchCities,

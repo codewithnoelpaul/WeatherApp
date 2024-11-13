@@ -14,7 +14,6 @@ import useHomeViewModel from './HomeViewModel';
 import {styles} from './HomeStyles';
 import Input from '../../components/Input/Input';
 import {Strings} from '../../constants/Strings';
-import {Colors} from '../../constants/Colors';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../navigations';
@@ -35,12 +34,12 @@ const HomeScreen: React.FC = () => {
     cityData,
     currentLocationData,
     loading,
+    isSearchLoading,
     error,
     fetchWeather,
     fetchCities,
     fetchWeatherByLocation,
   } = useHomeViewModel();
-  const [searchKey, setSearchKey] = useState<string>('');
   const [city, setCity] = useState<string>('San Francisco');
   const [location, setLocation] = useState<{
     latitude: number;
@@ -100,7 +99,6 @@ const HomeScreen: React.FC = () => {
   };
 
   const onChangeText = (text: string) => {
-    // setSearchKey(text);
     if (text.length >= 3) {
       fetchCities(text);
     }
@@ -181,7 +179,8 @@ const HomeScreen: React.FC = () => {
       <Loader isVisible={loading} />
       <View style={styles.headerView}>
         <Input
-          data={cityData}
+          loading={isSearchLoading}
+          data={cityData || []}
           placeholder={Strings.en.searchPlaceholder}
           onChangeText={onChangeText}
         />
