@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import SQLite, {SQLiteDatabase} from 'react-native-sqlite-storage';
+import SQLite, {SQLiteDatabase, ResultSet} from 'react-native-sqlite-storage';
 import {
   apiKey,
   City,
@@ -51,7 +51,7 @@ const useHomeViewModel = (): HomeViewModel => {
       'CREATE TABLE IF NOT EXISTS searchData (id INTEGER PRIMARY KEY AUTOINCREMENT, lat FLOAT, long FLOAT)',
       [],
       () => console.log('Table created successfully'),
-      (error: any) => console.log('Create table error:', error),
+      (error: Error) => console.log('Create table error:', error),
     );
   };
 
@@ -61,7 +61,7 @@ const useHomeViewModel = (): HomeViewModel => {
       tx.executeSql(
         'SELECT * FROM searchData',
         [],
-        (tx: any, results: any) => {
+        (tx: any, results: ResultSet) => {
           const data = [];
           for (let i = 0; i < results?.rows?.length; i++) {
             data.push(results.rows.item(i));
@@ -70,7 +70,7 @@ const useHomeViewModel = (): HomeViewModel => {
           setRecentSearches(data);
           setLoading(false);
         },
-        (error: any) => {
+        (error: Error) => {
           console.log('Error loading contacts:', error);
           setLoading(false);
         },

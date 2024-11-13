@@ -211,7 +211,7 @@ const HomeScreen: React.FC = () => {
           {Strings.en.recentSearches}
         </Text>
         <FlatList
-          data={recentSearches}
+          data={[...recentSearches].reverse()}
           renderItem={renderRecentSearches}
           ListEmptyComponent={renderEmptyRecentSearches}
           style={styles.flatList}
