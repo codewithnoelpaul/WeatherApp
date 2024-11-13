@@ -14,6 +14,7 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../navigations';
 import useInputViewModel from './InputViewModel';
+import {Strings} from '../../constants/Strings';
 
 const Input = ({
   loading,
@@ -55,7 +56,7 @@ const Input = ({
   const renderEmptyResults = () => (
     <View>
       {inputValue?.length >= 3 && (
-        <Text style={styles.noResultsText}>No results found</Text>
+        <Text style={styles.noResultsText}>{Strings.en.noResultsFound}</Text>
       )}
     </View>
   );

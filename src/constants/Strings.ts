@@ -12,8 +12,9 @@ export const Strings = {
     visibility: 'Visibility :',
     windDeg: 'Wind Deg :',
     windspeed: 'Wind Speed :',
-    enableLocation:'Please enable locations from your phone settings',
-    goToSetting:'Go to Setting',
-    cityDetails:'City Details'
+    enableLocation: 'Please enable locations from your phone settings',
+    goToSetting: 'Go to Setting',
+    cityDetails: 'City Details',
+    noResultsFound: 'No results found',
   },
 };
