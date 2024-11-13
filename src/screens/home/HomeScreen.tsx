@@ -6,6 +6,8 @@ import {
   SafeAreaView,
   FlatList,
   TouchableOpacity,
+  Platform,
+  Alert,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import useHomeViewModel from './HomeViewModel';
@@ -17,23 +19,85 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../navigations';
 import Loader from '../../components/Loader/Loader';
-import {AutocompleteDropdown} from 'react-native-autocomplete-dropdown';
+import {
+  openSettings,
+  PERMISSIONS,
+  request,
+  RESULTS,
+} from 'react-native-permissions';
+import Geolocation from 'react-native-geolocation-service';
 
 const HomeScreen: React.FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const {weatherData, cityData, loading, error, fetchWeather, fetchCities} =
-    useHomeViewModel();
+  const {
+    weatherData,
+    cityData,
+    currentLocationData,
+    loading,
+    error,
+    fetchWeather,
+    fetchCities,
+    fetchWeatherByLocation,
+  } = useHomeViewModel();
   const [searchKey, setSearchKey] = useState<string>('');
   const [city, setCity] = useState<string>('San Francisco');
+  const [location, setLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
+
+  useEffect(() => {
+    requestLocationPermission();
+  }, []);
 
   useEffect(() => {
     fetchWeather(city);
   }, [city]);
 
-  const iconUrl = weatherData?.weather[0]?.icon
-    ? `https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`
-    : null;
+  const getIconUrl = (icon: string) => {
+    return weatherData?.weather[0]?.icon
+      ? `https://openweathermap.org/img/wn/${icon}@2x.png`
+      : '';
+  };
+
+  const requestLocationPermission = async () => {
+    try {
+      let permissionResult;
+      if (Platform.OS === 'android') {
+        permissionResult = await request(
+          PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+        );
+      } else {
+        permissionResult = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+      }
+
+      if (permissionResult === RESULTS.GRANTED) {
+        getCurrentLocation();
+      } else {
+        Alert.alert(
+          'Location Permission',
+          'Permission to access location was denied',
+        );
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+  };
+
+  const getCurrentLocation = () => {
+    Geolocation.getCurrentPosition(
+      position => {
+        const {latitude, longitude} = position.coords;
+        setLocation({latitude, longitude});
+        fetchWeatherByLocation(latitude, longitude);
+      },
+      error => {
+        console.log('Cannot open app settings -', error.message);
+      },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
+  };
 
   const onChangeText = (text: string) => {
     // setSearchKey(text);
@@ -47,7 +111,9 @@ const HomeScreen: React.FC = () => {
   };
 
   const onSettings = () => {
-    // openSettings('application').catch(() => console.warn('Cannot open app settings'));
+    openSettings('application').catch(() =>
+      console.log('Cannot open app settings'),
+    );
   };
 
   const renderRecentSearches = () => {
@@ -76,22 +142,20 @@ const HomeScreen: React.FC = () => {
   const renderLocationCard = () => (
     <>
       <View style={styles.rowViewTop}>
-        <Text style={styles.tempText}>{weatherData?.main.temp}°</Text>
-        {iconUrl && (
-          <FastImage
-            style={styles.weatherIcon}
-            source={{
-              uri: iconUrl,
-              priority: FastImage.priority.high,
-            }}
-            resizeMode={FastImage.resizeMode.contain}
-          />
-        )}
+        <Text style={styles.tempText}>{currentLocationData?.main.temp}°</Text>
+        <FastImage
+          style={styles.weatherIcon}
+          source={{
+            uri: getIconUrl(currentLocationData?.weather[0]?.icon || ''),
+            priority: FastImage.priority.high,
+          }}
+          resizeMode={FastImage.resizeMode.contain}
+        />
       </View>
       <View style={styles.rowViewBottom}>
-        <Text style={styles.cityText}>{weatherData?.name}</Text>
+        <Text style={styles.cityText}>{currentLocationData?.name}</Text>
         <Text style={styles.climateText}>
-          {weatherData?.weather[0].description}
+          {currentLocationData?.weather[0].description}
         </Text>
       </View>
     </>
@@ -127,7 +191,9 @@ const HomeScreen: React.FC = () => {
           <Text style={styles.currentLocationText}>
             {Strings.en.yourLocation}
           </Text>
-          {weatherData ? renderLocationCard() : renderEmpptyLocationCard()}
+          {currentLocationData && location
+            ? renderLocationCard()
+            : renderEmpptyLocationCard()}
         </View>
         <Text style={styles.recentSearchesText}>
           {Strings.en.recentSearches}

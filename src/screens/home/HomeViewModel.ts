@@ -5,10 +5,12 @@ import apiManager from '../../services/ApiManager';
 interface HomeViewModel {
   weatherData: WeatherData | null;
   cityData: City[] | null;
+  currentLocationData: WeatherData | null;
   loading: boolean;
   error: string | null;
   fetchWeather: (city: string) => Promise<void>;
   fetchCities: (query: string) => Promise<void>;
+  fetchWeatherByLocation: (lat: number, lon: number) => Promise<void>;
 }
 
 const kelvinToCelsius = (kelvin: number): number => {
@@ -20,6 +22,8 @@ const useHomeViewModel = (): HomeViewModel => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [cityData, setCityData] = useState<City[] | null>(null);
+  const [currentLocationData, setCurrentLocationData] =
+    useState<WeatherData | null>(null);
 
   const fetchWeather = async (city: string) => {
     setLoading(true);
@@ -54,7 +58,39 @@ const useHomeViewModel = (): HomeViewModel => {
     }
   };
 
-  return {weatherData, cityData, loading, error, fetchWeather, fetchCities};
+  const fetchWeatherByLocation = async (lat: number, lon: number) => {
+    setLoading(true);
+    try {
+      const data: WeatherData = await apiManager.get('weather', {
+        lat,
+        lon,
+        appid: 'ad48ef57fc073616eec522064a175756',
+      });
+
+      data.main.temp = kelvinToCelsius(data.main.temp);
+      data.main.feels_like = kelvinToCelsius(data.main.feels_like);
+      data.main.temp_min = kelvinToCelsius(data.main.temp_min);
+      data.main.temp_max = kelvinToCelsius(data.main.temp_max);
+      setCurrentLocationData(data);
+      // setWeatherData(data);
+      setError(null);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    weatherData,
+    cityData,
+    currentLocationData,
+    loading,
+    error,
+    fetchWeather,
+    fetchCities,
+    fetchWeatherByLocation,
+  };
 };
 
 export default useHomeViewModel;
