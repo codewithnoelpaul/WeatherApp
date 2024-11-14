@@ -44,7 +44,7 @@ const HomeScreen: React.FC = () => {
     fetchCities,
     fetchWeatherByLocation,
   } = useHomeViewModel();
-  const [city, setCity] = useState<string>('San Francisco');
+  const [city, setCity] = useState<string>('');
   const [location, setLocation] = useState<{
     latitude: number;
     longitude: number;
@@ -60,7 +60,7 @@ const HomeScreen: React.FC = () => {
   }, [city]);
 
   useEffect(() => {
-    getRecentSearches();
+    if (isFocused) getRecentSearches();
   }, [isFocused]);
 
   const getIconUrl = (icon: string) => {
@@ -126,10 +126,9 @@ const HomeScreen: React.FC = () => {
   const renderRecentSearches = ({item}: ListRenderItemInfo<WeatherData>) => {
     return (
       <TouchableOpacity
+        testID="recent-search-card"
         style={styles.recentSearchCard}
-        onPress={() => {
-          onCard(item.coord);
-        }}>
+        onPress={() => onCard(item.coord)}>
         <View style={styles.cardRowViewTop}>
           <Text style={styles.cardCityText}>{item?.name}</Text>
           <Text style={styles.cardTempText}>{item?.main?.temp}°</Text>
@@ -147,7 +146,9 @@ const HomeScreen: React.FC = () => {
   };
 
   const renderEmptyRecentSearches = () => (
-    <Text style={styles.noRecentSearches}>{Strings.en.noRecentSearches}</Text>
+    <Text testID="no-recent-searches" style={styles.noRecentSearches}>
+      {Strings.en.noRecentSearches}
+    </Text>
   );
 
   const renderLocationCard = () => (
@@ -172,13 +173,14 @@ const HomeScreen: React.FC = () => {
     </>
   );
 
-  const renderEmpptyLocationCard = () => (
+  const renderEmptyLocationCard = () => (
     <>
       <View style={styles.emptyLocationView}>
         <Text style={styles.enableLocationText}>
           {Strings.en.enableLocation}
         </Text>
         <Text
+          testID="go-to-settings"
           style={[styles.currentLocationText, {marginTop: 10}]}
           onPress={onSettings}>
           {Strings.en.goToSetting}
@@ -205,7 +207,7 @@ const HomeScreen: React.FC = () => {
           </Text>
           {currentLocationData && location
             ? renderLocationCard()
-            : renderEmpptyLocationCard()}
+            : renderEmptyLocationCard()}
         </View>
         <Text style={styles.recentSearchesText}>
           {Strings.en.recentSearches}
